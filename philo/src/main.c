@@ -6,7 +6,7 @@
 /*   By: rpohlen <rpohlen@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/08 11:40:14 by rpohlen           #+#    #+#             */
-/*   Updated: 2022/07/08 13:47:19 by rpohlen          ###   ########.fr       */
+/*   Updated: 2022/07/10 00:25:18 by rpohlen          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,16 +14,12 @@
 
 int	main(int ac, char **av)
 {
-	int				args[5]; //num philo, die, eat, sleep, limit
-	pthread_mutex_t	**forks;
-	t_philo			**philos;
+	t_data	data;
 
-	//interpret args, error out, write into args[5]
-	read_params(ac, av, args);
-	//create forks, error out if fail
-	forks = create_forks(args[1]);
-	//create philos, error out (+ free mutex) if fail
-	philos = create_philos(args[1]);
-	//
+	if (read_params(ac, av, data.args))
+		usage();
+	init_data(&data);
+	init_philos(data);
+	launch_threads(data);
 	return (0);
 }
