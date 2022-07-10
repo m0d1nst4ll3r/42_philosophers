@@ -6,12 +6,16 @@
 /*   By: rpohlen <rpohlen@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/08 09:53:08 by rpohlen           #+#    #+#             */
-/*   Updated: 2022/07/10 02:16:33 by rpohlen          ###   ########.fr       */
+/*   Updated: 2022/07/10 15:55:19 by rpohlen          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef PHILO_H
 # define PHILO_H
+
+# define EAT "is eating\n"
+# define SLEEP "is sleeping\n"
+# define THINK "is thinking\n"
 
 # include <pthread.h>	// threads
 # include <stdlib.h>	// exit malloc free
@@ -29,9 +33,9 @@
 |
 |	- lfork				"forks" locked when eating, actually pointers
 |	- rfork					to an array of mutexes (1 mutex per philo)
-|	- write_mutex		protects writing, shared with monitor struct
-|	- start_mutex		threads won't start before this is unlocked
-|							syncs threads so they all start at 0 ms
+|	- mutex				protects writing and touching active_philos
+|							also helps sync thread start
+|							shared with monitor
 |	- id				id of the philo for writing & strategy
 |	- time_to_die	    	         until death		|
 |	- time_to_eat		milliseconds spent eating		|
@@ -49,8 +53,7 @@ typedef struct s_philo
 {
 	pthread_mutex_t	*lfork;
 	pthread_mutex_t	*rfork;
-	pthread_mutex_t	*write_mutex;
-	pthread_mutex_t	*start_mutex;
+	pthread_mutex_t	*mutex;
 	int				id;
 	int				time_to_die;
 	int				time_to_eat;
@@ -72,8 +75,9 @@ typedef struct s_philo
 |
 |	- args				curated arguments: number of philos, time to die, to eat,
 |							to sleep, meal limit
-|	- write_mutex		mutex used to protect writes
-|	- start_mutex		mutex used to synchronize threads start
+|	- mutex				protects writing and touching active_philos
+|							also helps sync thread start
+|							shared with monitor
 |	- threads			all threads used - philo and monitor
 |	- forks				list of mutexes, one for each philo
 |	- philos			list of s_philo structures to send to each philo thread
@@ -84,8 +88,7 @@ typedef struct s_philo
 typedef struct s_data
 {
 	int				args[5];
-	pthread_mutex_t	write_mutex[1];
-	pthread_mutex_t	start_mutex[1];
+	pthread_mutex_t	mutex[1];
 	pthread_mutex_t	*forks;
 	pthread_t		*threads;
 	t_philo			*philos;
@@ -96,7 +99,11 @@ typedef struct s_data
 
 //// Threaded functions for philos and monitor
 // threads.c
+// philo.c
+// monitor.c
 void	launch_threads(t_data data);
+void	*philo(void *arg);
+void	*monitor(void *arg);
 
 //// Functions to manipulate gettimeofday time values
 // time.c

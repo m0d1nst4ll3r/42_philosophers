@@ -6,7 +6,7 @@
 /*   By: rpohlen <rpohlen@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/09 22:29:43 by rpohlen           #+#    #+#             */
-/*   Updated: 2022/07/10 02:19:15 by rpohlen          ###   ########.fr       */
+/*   Updated: 2022/07/10 16:22:38 by rpohlen          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,8 +25,7 @@ void	init_data(t_data *data)
 	data->death_timers = malloc(sizeof(*data->death_timers) * data->args[0]);
 	data->threads = malloc(sizeof(*data->threads) * (data->args[0] + 1));
 	if (!data->forks || !data->philos || !data->death_timers || !data->threads
-		|| pthread_mutex_init(data->write_mutex, NULL)
-		|| pthread_mutex_init(data->start_mutex, NULL))
+		|| pthread_mutex_init(data->mutex, NULL))
 		exit_prog(*data);
 	i = -1;
 	while (++i < data->args[0])
@@ -52,8 +51,7 @@ void	init_philos(t_data data)
 			data.philos[i].rfork = data.forks;
 		else
 			data.philos[i].rfork = data.forks + i + 1;
-		data.philos[i].write_mutex = data.write_mutex;
-		data.philos[i].start_mutex = data.start_mutex;
+		data.philos[i].mutex = data.mutex;
 		data.philos[i].time_to_die = data.args[1];
 		data.philos[i].time_to_eat = data.args[2];
 		data.philos[i].time_to_sleep = data.args[3];
@@ -61,6 +59,6 @@ void	init_philos(t_data data)
 		data.philos[i].active_philos = data.active_philos;
 		data.philos[i].death_timer = data.death_timers + i;
 		data.philos[i].timestamp_start = data.timestamp_start;
-		data.philos[i].id = i;
+		data.philos[i].id = i + 1;
 	}
 }

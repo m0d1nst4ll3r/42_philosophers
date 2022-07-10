@@ -6,7 +6,7 @@
 /*   By: rpohlen <rpohlen@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/09 22:27:58 by rpohlen           #+#    #+#             */
-/*   Updated: 2022/07/10 01:49:42 by rpohlen          ###   ########.fr       */
+/*   Updated: 2022/07/10 16:18:35 by rpohlen          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,7 @@ void	exit_prog(t_data data)
 	free(data.philos);
 	free(data.death_timers);
 	free(data.threads);
-	pthread_mutex_destroy(data.write_mutex);
-	pthread_mutex_destroy(data.start_mutex);
-	exit(1);
+	pthread_mutex_unlock(data.mutex);
+	pthread_mutex_destroy(data.mutex);
+	exit(0);
 }
